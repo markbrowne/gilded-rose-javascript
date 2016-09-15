@@ -1,8 +1,32 @@
+'use strict'
+
 function Item(name, sell_in, quality) {
   this.name = name;
   this.sell_in = sell_in;
   this.quality = quality;
 }
+
+const MaxQuality = 50;
+const MinQuality = 0;
+
+
+const Rules = {};
+Rules['Aged Brie'] = {sell : 1, quality : 1};
+Rules['Sulfuras, Hand of Ragnaros'] = {sell : 0, quality : 0};
+Rules['Backstage passes to a TAFKAL80ETC concert'] = {sell : 1, quality : {
+                                                                            10 : 2,
+                                                                            9 : 2,
+                                                                            8 : 2,
+                                                                            7 : 2,
+                                                                            6 : 2,
+                                                                            5 : 3,
+                                                                            4 : 3,
+                                                                            3 : 3,
+                                                                            2 : 3,
+                                                                            1 : 3,
+                                                                            0 : 0}};
+Rules['Conjured Mana Cake'] = {sell : 1, quality : -2};
+
 
 var items = []
 
@@ -13,7 +37,43 @@ items.push(new Item('Sulfuras, Hand of Ragnaros', 0, 80));
 items.push(new Item('Backstage passes to a TAFKAL80ETC concert', 15, 20));
 items.push(new Item('Conjured Mana Cake', 3, 6));
 
+function MinMaxQuality(quality){
+    if(quality >= 0 && quality < 50){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 function update_quality() {
+  for(var item in items){
+    var ItemRule = Rules[items[item].name];
+
+    if(ItemRule != undefined){
+      if(ItemRule.quality[items[item].sell_in] != undefined){
+        if(items[item].sell_in != 0){
+          items[item].quality += (MinMaxQuality(items[item].quality) ? ItemRule.quality[items[item].sell_in] : 0)
+        }else{
+          items[item].quality = 0
+        }
+      }else if(ItemRule.quality[0] != undefined){
+        items[item].quality += (MinMaxQuality(items[item].quality) ? 1 : 0);
+      }else{
+        items[item].quality += (MinMaxQuality(items[item].quality) ? ItemRule.quality : 0)
+      }
+      items[item].sell_in -= ItemRule.sell;
+    }else{
+      items[item].sell_in -= 1;
+      if(items[item].quality != MinQuality){
+        if(MinMaxQuality(items[item].quality)){
+          items[item].quality -= 2;
+        }else{
+          items[item].quality -= 1;
+        }
+      }
+    }
+  }
+  /*
   for (var i = 0; i < items.length; i++) {
     if (items[i].name != 'Aged Brie' && items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
       if (items[i].quality > 0) {
@@ -28,7 +88,7 @@ function update_quality() {
       }
     } else {
       if (items[i].quality < 50) {
-        items[i].quality = items[i].quality + 1
+        items[i].quality += 1
         if (items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
           if (items[i].sell_in < 11) {
             if (items[i].quality < 50) {
@@ -43,6 +103,7 @@ function update_quality() {
         }
       }
     }
+
     if (items[i].name != 'Sulfuras, Hand of Ragnaros') {
       items[i].sell_in = items[i].sell_in - 1;
     }
@@ -64,8 +125,10 @@ function update_quality() {
         }
       }
     }
-  }
+  }*/
 }
+
+
 
 function calculateDegradeRate(name, sell_in){
   let degradeValue = -1
