@@ -66,3 +66,23 @@ function update_quality() {
     }
   }
 }
+
+function calculateDegradeRate(name, sell_in){
+  let degradeValue = -1
+
+  name == 'Aged Brie'
+    ? degradeValue = 1 : undefined
+
+  if(name == 'Backstage passes to a TAFKAL80ETC concert'){
+    degradeValue = 1
+    sell_in < 0 ? degradeValue = degradeValue * 0 :
+      sell_in <= 5 ? degradeValue = degradeValue * 3 :
+        sell_in <= 10 ? degradeValue = degradeValue * 2 : undefined
+  }
+
+  name == 'Conjured Mana Cake' ? degradeValue = 2 : undefined
+
+  if(sell_in < 0){ degradeValue= degradeValue * 2}
+
+  return degradeValue
+}

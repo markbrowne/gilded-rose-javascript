@@ -102,5 +102,27 @@ describe("Gilded Rose", function() {
       expect(items[5].quality).toEqual(4)
     })
   })
-
+  describe('calculateDegradeRate()', function(){
+    it('should return -1 for non special items', function(){
+      expect(calculateDegradeRate('+5 Dexterity Vest', 10)).toEqual(-1)
+    })
+    it('should double degradeValue when sell_in < 0', function(){
+      expect(calculateDegradeRate('+5 Dexterity Vest', -1)).toEqual(-2)
+    })
+    it('should return a positive number when name matches Aged Brie', function(){
+      expect(calculateDegradeRate('Aged Brie', 1)).toEqual(1)
+    })
+    it('should return 2 for Backstage Passes as the sell_in value decreases while sell_in is <= 10', function(){
+      expect(calculateDegradeRate('Backstage passes to a TAFKAL80ETC concert', 10)).toEqual(2)
+    })
+    it('should return 3 for Backstage Passes as the sell_in value decreases while sell_in is <= 5', function(){
+      expect(calculateDegradeRate('Backstage passes to a TAFKAL80ETC concert', 5)).toEqual(3)
+    })
+    it('should return 0 for Backstage Passes as the sell_in value decreases while sell_in is < 0', function(){
+      expect(calculateDegradeRate('Backstage passes to a TAFKAL80ETC concert', -1)).toEqual(0)
+    })
+    it('should return 2 for conjured items', function(){
+      expect(calculateDegradeRate('Conjured Mana Cake', 1)).toEqual(2)
+    })
+  })
 });
